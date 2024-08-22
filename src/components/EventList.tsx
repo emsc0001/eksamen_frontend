@@ -16,23 +16,22 @@ const EventList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/events')
-      .then(response => response.json())
+    fetch('http://localhost:8080/api/events')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => setEvents(data))
       .catch(error => {
         console.error('Error fetching events:', error);
-        setError('Error fetching events');
+        setError(error.message);
       });
   }, []);
 
-  const handleDelete = (id: number) => {
-    fetch(`/api/events/${id}`, { method: 'DELETE' })
-      .then(() => setEvents(events.filter(event => event.id !== id)))
-      .catch(error => console.error('Error deleting event:', error));
-  };
-
   if (error) {
-    return <div>{error}</div>;
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -50,6 +49,12 @@ const EventList: React.FC = () => {
       </ul>
     </div>
   );
+};
+
+const handleDelete = (id: number) => {
+  fetch(`http://localhost:8080/api/events/${id}`, { method: 'DELETE' })
+    .then(() => setEvents(events.filter(event => event.id !== id)))
+    .catch(error => console.error('Error deleting event:', error));
 };
 
 export default EventList;
