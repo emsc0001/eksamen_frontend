@@ -1,60 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { getEvents, deleteEvent } from '../services/api';
 
 interface Event {
-  id: number;
-  name: string;
+  id: string;
+  discipline: { name: string };
+  track: { name: string };
   duration: number;
-  maxParticipants: number;
-  discipline: string;
-  track: string;
-  timeSlot: string;
 }
 
 const EventList: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/events')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => setEvents(data))
-      .catch(error => {
-        console.error('Error fetching events:', error);
-        setError(error.message);
-      });
+    fetchEvents();
   }, []);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const fetchEvents = async () => {
+    try {
+      const data = await getEvents();
+      setEvents(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (eventId: string) => {
+    try {
+      await deleteEvent(eventId);
+      fetchEvents(); // Refresh the list after deletion
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
-      <h1>Events</h1>
-      <Link to="/create-event">Create Event</Link>
+      <h2>Events</h2>
       <ul>
         {events.map(event => (
           <li key={event.id}>
-            {event.name} - {event.duration} minutes - {event.maxParticipants} participants
-            <Link to={`/edit-event/${event.id}`}>Edit</Link>
+            {event.discipline.name} on {event.track.name} for {event.duration} minutes
             <button onClick={() => handleDelete(event.id)}>Delete</button>
+            <button onClick={() => handleEdit(event)}>Edit</button>
           </li>
         ))}
       </ul>
     </div>
   );
-};
-
-const handleDelete = (id: number) => {
-  fetch(`http://localhost:8080/api/events/${id}`, { method: 'DELETE' })
-    .then(() => setEvents(events.filter(event => event.id !== id)))
-    .catch(error => console.error('Error deleting event:', error));
-};
+}
 
 export default EventList;
