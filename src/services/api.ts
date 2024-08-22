@@ -25,17 +25,25 @@ export const getEvents = async () => {
 };
 
 export const createEvent = async (eventData: any) => {
-  const response = await fetch(`${API_BASE_URL}/events`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(eventData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create event');
+  try {
+    const response = await fetch(`${API_BASE_URL}/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to create event: ${errorData.message}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error creating event:', error);
+    throw error;
   }
-  return response.json();
 };
 
 export const deleteEvent = async (eventId: string) => {
