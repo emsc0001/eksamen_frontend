@@ -35,6 +35,12 @@ export const createEvent = async (event: any) => {
     return post('/events', event);
 };
 
+export async function updateEvent(id, eventData) {
+    const response = await post(`/events/${id}`, eventData);
+    return await handleResponse(response);
+}
+
+
 export const getAllEvents = async () => {
     return get('/events');
 };
