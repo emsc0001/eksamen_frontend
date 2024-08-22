@@ -1,15 +1,23 @@
 import React from 'react';
-import EventForm from './components/EventForm';
-import EventList from './components/EventList';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import EventPage from './pages/EventPage';
 
-const App: React.FC = () => {
+function App() {
   return (
-    <div>
-      <h1>Athletics Planner</h1>
-      <EventForm />
-      <EventList />
-    </div>
+    <Router>
+      <nav>
+        <Link to="/events">Events</Link>
+        <Link to="/tracks">Tracks</Link>
+        <Link to="/disciplines">Disciplines</Link>
+        <Link to="/timeslots">TimeSlots</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/events" element={<EventPage />} />
+        {/* Other routes */}
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
