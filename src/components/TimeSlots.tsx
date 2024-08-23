@@ -1,61 +1,37 @@
-// TimeSlotPage.jsx
-import React, { useState, useEffect } from 'react';
-import { createTimeSlot, getAllTimeSlots } from '../services/apiFacade';
+import React, { useState } from 'react';
+import { createTimeSlot } from '../services/apiFacade';
 
-const TimeSlotPage = () => {
-    const [timeSlots, setTimeSlots] = useState([]);
-    const [newTimeSlot, setNewTimeSlot] = useState({
-        startTime: '',
-        endTime: ''
-    });
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const timeSlotsData = await getAllTimeSlots();
-            setTimeSlots(timeSlotsData);
-        };
-        fetchData();
-    }, []);
+const CreateTimeSlot = () => {
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
 
     const handleCreateTimeSlot = async (e) => {
         e.preventDefault();
         try {
-            const response = await createTimeSlot(newTimeSlot);
-            console.log("TimeSlot created successfully:", response);
-            setTimeSlots([...timeSlots, response]);
-            setNewTimeSlot({ startTime: '', endTime: '' });
+            await createTimeSlot({ startTime, endTime });
+            alert("TimeSlot created successfully");
         } catch (error) {
             console.error("Error creating TimeSlot:", error);
         }
     };
 
     return (
-        <div>
-            <h1>Create a New TimeSlot</h1>
-            <form onSubmit={handleCreateTimeSlot}>
-                <input
-                    type="datetime-local"
-                    value={newTimeSlot.startTime}
-                    onChange={(e) => setNewTimeSlot({ ...newTimeSlot, startTime: e.target.value })}
-                    required
-                />
-                <input
-                    type="datetime-local"
-                    value={newTimeSlot.endTime}
-                    onChange={(e) => setNewTimeSlot({ ...newTimeSlot, endTime: e.target.value })}
-                    required
-                />
-                <button type="submit">Create TimeSlot</button>
-            </form>
-
-            <h2>All TimeSlots</h2>
-            <ul>
-                {timeSlots.map((slot) => (
-                    <li key={slot.id}>{`${new Date(slot.startTime).toLocaleString()} - ${new Date(slot.endTime).toLocaleString()}`}</li>
-                ))}
-            </ul>
-        </div>
+        <form onSubmit={handleCreateTimeSlot}>
+            <input
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+            />
+            <input
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+            />
+            <button type="submit">Create TimeSlot</button>
+        </form>
     );
 };
 
-export default TimeSlotPage;
+export default CreateTimeSlot;
