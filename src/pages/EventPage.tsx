@@ -53,32 +53,19 @@ const EventPage = () => {
         }
     };
 
-    const handleCreateEvent = async (e) => {
-        e.preventDefault();
-        const eventData = {
-            name: newEvent.name,
-            gender: newEvent.participantGender.toUpperCase(), // Convert to uppercase
-            discipline: newEvent.discipline.toUpperCase(), // Convert to uppercase
-            trackId: newEvent.trackId,
-        };
-
+    const handleCreateEvent = async () => {
         try {
-            const response = await createEvent(eventData);
-            console.log("Event created successfully:", response);
-
-            if (newEvent.timeSlotId) {
-                await linkEventToTimeSlot(newEvent.timeSlotId, response.id);
-            }
-
-            const updatedEvents = await getAllEvents();
-            setEvents(updatedEvents);
-            resetForm();  // Reset the form after successful creation
-            setMessage("Event created successfully");
+            const eventResponse = await createEvent(eventData);
+            console.log("Event created successfully:", eventResponse);
+    
+            // Link the created event to a timeslot
+            const linkResponse = await linkEventToTimeSlot(timeSlotId, eventResponse.id);
+            console.log("Event linked to timeslot successfully:", linkResponse);
         } catch (error) {
-            console.error("Error creating event:", error);
-            setMessage("Error creating event");
+            console.error("Error creating or linking event:", error);
         }
     };
+    
 
     const handleEditEvent = (event) => {
         setEditingEvent(event);

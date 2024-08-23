@@ -71,9 +71,10 @@ export const deleteTimeSlot = async (id) => {
     return del(`/timeslots/${id}`);
 };
 
-export const linkEventToTimeSlot = async (timeSlotId, eventId) => {
+export const linkEventToTimeSlot = async (timeSlotId: number, eventId: number) => {
     return post(`/timeslots/${timeSlotId}/events`, { eventId });
 };
+
 
 export const removeEventFromTimeSlot = async (timeSlotId, eventId) => {
     return del(`/timeslots/${timeSlotId}/events/${eventId}`);
